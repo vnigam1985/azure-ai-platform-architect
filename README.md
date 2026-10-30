@@ -2,6 +2,14 @@
 
 > A step-by-step guide to becoming a **Cloud AI Platform Architect on Microsoft Azure**, with free and paid learning resources, working code (Bicep, Terraform, Azure Policy, APIM policies, KQL), hands-on labs and interview prep.
 
+<p align="left">
+  <a href="https://www.linkedin.com/in/nigam-vishal/"><img alt="Follow on LinkedIn" src="https://img.shields.io/badge/LinkedIn-Follow%20Vishal-0A66C2?logo=linkedin&logoColor=white"></a>
+  <a href="https://www.youtube.com/@thrivewithvishal"><img alt="YouTube" src="https://img.shields.io/badge/YouTube-thrivewithvishal-FF0000?logo=youtube&logoColor=white"></a>
+  <a href="https://www.instagram.com/thrivewithvishal"><img alt="Instagram" src="https://img.shields.io/badge/Instagram-thrivewithvishal-E4405F?logo=instagram&logoColor=white"></a>
+  <a href="https://vnigam1985.github.io"><img alt="Portfolio" src="https://img.shields.io/badge/Portfolio-vnigam1985.github.io-222222?logo=githubpages&logoColor=white"></a>
+  <a href="https://mentoraccelerate.com/90-day-job-search-framework"><img alt="Free 90-Day Job Search Framework" src="https://img.shields.io/badge/Free-90--Day%20Job%20Search%20Framework-F5A623"></a>
+</p>
+
 Most AI roadmaps teach you to build a chatbot. This one teaches you to build the **platform** every chatbot, agent and RAG app in a large company runs on: private networking, identity, guardrails, an AI gateway, observability and cost control. That's the part enterprises struggle with, and the part they pay architects for.
 
 It's written for cloud, platform, network and DevOps engineers who already know Azure infrastructure and want to move into AI. If you know VNets, firewalls, route tables and Azure Policy, you already have half of this job.
@@ -46,6 +54,7 @@ This roadmap shows the landscape. You don't need every tool on it. Learn the fun
 - [Where to keep learning](#where-to-keep-learning)
 - [Repository map](#repository-map)
 - [Contribution](#contribution)
+- [About the author](#-about-the-author)
 
 ---
 
@@ -403,6 +412,42 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Code is under the [MIT License](LICENSE). Microsoft, Azure and other product names are trademarks of their owners. This is a community project, not official Microsoft guidance.
 
-## Author
+## 👋 About the author
 
-**Vishal Nigam**, Senior Cloud Engineer and Azure SME, 18+ years in enterprise IT. [LinkedIn](https://www.linkedin.com/in/nigam-vishal)
+**Vishal Nigam** is a Senior Cloud Engineer and Azure SME with 18+ years in enterprise IT. He builds cloud platforms, landing zones, network security and guardrails for large regulated companies, and now helps engineers move into AI platform work.
+
+He came to Canada in 2017 with $5,000, a wife, a 4-year-old son and zero connections. He has since landed 6 job offers in Canada without a single direct application. No one handed him a playbook, so he built one, and he shares it for free.
+
+He teaches systems, strategy and execution. Not motivation.
+
+### Follow for more
+
+| Where | What you get |
+| --- | --- |
+| [LinkedIn](https://www.linkedin.com/in/nigam-vishal/) | Azure platform engineering, cloud careers and job search, posted several times a week |
+| [YouTube](https://www.youtube.com/@thrivewithvishal) | Long-form videos on cloud careers and platform engineering |
+| [Instagram @thrivewithvishal](https://www.instagram.com/thrivewithvishal) | Cloud career tips and the personal journey |
+| [Instagram @mentoraccelerate](https://www.instagram.com/mentoraccelerate) | Cloud, DevOps, job search and interview tips |
+| [Instagram @cloudwithvishal](https://www.instagram.com/cloudwithvishal) | Cloud Episodes in Hindi, cloud interview reels |
+| [Instagram @cloudwithvishal.en](https://www.instagram.com/cloudwithvishal.en) | Cloud Episodes in English |
+| [X](https://x.com/thrivewidvishal) | Quick takes on cloud and AI |
+| [Facebook](https://www.facebook.com/people/Vishal-Nigam/61565195962651/) | Updates and videos |
+| [Portfolio](https://vnigam1985.github.io) | Projects and experience |
+| [GitHub](https://github.com/vnigam1985) | More free roadmaps and templates |
+| [All links](https://linktr.ee/nigamv) | Everything in one place |
+
+### Free resources
+
+- 📘 **[90-Day Job Search Framework](https://mentoraccelerate.com/90-day-job-search-framework)**: the step-by-step system for landing a cloud role, free
+- 🤝 **[MentorAccelerate Cloud Career Community waitlist](https://mentoraccelerate.com/cloudcareercommunitywaitlist)**: a place to prepare for cloud roles and get help from working cloud engineers
+
+### More free roadmaps by Vishal
+
+| Repo | For |
+| --- | --- |
+| [azure-ai-platform-architect](https://github.com/vnigam1985/azure-ai-platform-architect) | Becoming an AI Platform Architect on Microsoft Azure |
+| [aws-ai-platform-architect](https://github.com/vnigam1985/aws-ai-platform-architect) | Becoming an AI Platform Architect on AWS |
+| [gcp-ai-platform-architect](https://github.com/vnigam1985/gcp-ai-platform-architect) | Becoming an AI Platform Architect on Google Cloud |
+| [ai-quality-engineer](https://github.com/vnigam1985/ai-quality-engineer) | QA and test engineers moving into AI and LLM testing |
+
+If this repo helped you, **star it**, and tell Vishal on LinkedIn what you built with it.
