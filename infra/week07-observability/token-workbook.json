@@ -1,0 +1,132 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "name": "intro",
+      "content": {
+        "json": "## AI platform: tokens and cost by team\nToken numbers come from the `llm-emit-token-metric` policy on the API gateway (week 4). Cost is an **estimate**: set your model's current prices in the boxes below. If the tables are empty, run the last query to see which metric names your gateway emits."
+      }
+    },
+    {
+      "type": 9,
+      "name": "params",
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "p1",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "isRequired": true,
+            "value": {
+              "durationMs": 604800000
+            },
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 2592000000
+                }
+              ]
+            }
+          },
+          {
+            "id": "p2",
+            "version": "KqlParameterItem/1.0",
+            "name": "InputPrice",
+            "label": "Input USD per 1M tokens",
+            "type": 1,
+            "isRequired": true,
+            "value": "0.40"
+          },
+          {
+            "id": "p3",
+            "version": "KqlParameterItem/1.0",
+            "name": "OutputPrice",
+            "label": "Output USD per 1M tokens",
+            "type": 1,
+            "isRequired": true,
+            "value": "1.60"
+          }
+        ]
+      }
+    },
+    {
+      "type": 3,
+      "name": "tokens",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| where timestamp {TimeRange}\n| where name in (\"Prompt Tokens\", \"Completion Tokens\", \"Total Tokens\")\n| extend team = tostring(customDimensions[\"Team\"])\n| summarize tokens = sum(valueSum) by team, name\n| evaluate pivot(name, sum(tokens))",
+        "size": 0,
+        "title": "Tokens by team",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "name": "trend",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| where timestamp {TimeRange}\n| where name == \"Total Tokens\"\n| extend team = tostring(customDimensions[\"Team\"])\n| summarize tokens = sum(valueSum) by team, bin(timestamp, 1h)",
+        "size": 0,
+        "title": "Total tokens per hour by team",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "timechart"
+      }
+    },
+    {
+      "type": 3,
+      "name": "cost",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let inputPer1M = {InputPrice:value};\nlet outputPer1M = {OutputPrice:value};\ncustomMetrics\n| where timestamp {TimeRange}\n| where name in (\"Prompt Tokens\", \"Completion Tokens\")\n| extend team = tostring(customDimensions[\"Team\"])\n| summarize prompt = sumif(valueSum, name == \"Prompt Tokens\"), completion = sumif(valueSum, name == \"Completion Tokens\") by team\n| extend estimated_cost_usd = round(prompt / 1000000.0 * inputPer1M + completion / 1000000.0 * outputPer1M, 4)\n| order by estimated_cost_usd desc",
+        "size": 0,
+        "title": "Estimated cost by team (showback)",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      }
+    },
+    {
+      "type": 3,
+      "name": "status",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests\n| where timestamp {TimeRange}\n| summarize calls = count() by resultCode\n| order by calls desc",
+        "size": 0,
+        "title": "Gateway responses by status code (429 = token limit, 401/403 = blocked)",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "piechart"
+      }
+    },
+    {
+      "type": 3,
+      "name": "names",
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "customMetrics\n| where timestamp {TimeRange}\n| summarize samples = count() by name\n| order by samples desc",
+        "size": 0,
+        "title": "Which token metric names does my gateway emit?",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table"
+      }
+    }
+  ],
+  "fallbackResourceIds": [],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
