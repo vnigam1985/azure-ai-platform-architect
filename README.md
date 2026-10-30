@@ -32,6 +32,7 @@ This roadmap shows the landscape. You don't need every tool on it. Learn the fun
 
 ## Table of Contents
 
+- [🚀 The 8-week build-along course](#-new-the-8-week-build-along-course)
 - [How to use this repo](#how-to-use-this-repo)
 - [The role in one picture](#the-role-in-one-picture)
 - [Learning path (mostly free)](#learning-path-mostly-free)
@@ -55,6 +56,32 @@ This roadmap shows the landscape. You don't need every tool on it. Learn the fun
 - [Repository map](#repository-map)
 - [Contribution](#contribution)
 - [About the author](#-about-the-author)
+
+---
+
+## 🚀 New: the 8-week build-along course
+
+Reading a roadmap doesn't make you an architect. Building one platform end to end does. The course builds a **private, governed AI platform on Azure** in Bicep, one layer a week, and runs a real workload on it: a bank assistant (RAG chatbot plus an agent that can move money).
+
+![8-week course](assets/course.svg)
+
+| Week | Topic | You build | Command | Branch |
+| --- | --- | --- | --- | --- |
+| 0 | [Setup and local lab](weeks/00-setup-and-local-lab/README.md) | The whole request path on your laptop for $0 (LiteLLM gateway + Ollama), then a budget alert | `make local-up` | `week-00` |
+| 1 | [Landing zone](weeks/01-landing-zone/README.md) | Hub/spoke VNets, NSGs, private DNS, Log Analytics | `make week1` | `week-01` |
+| 2 | [Private model](weeks/02-private-model/README.md) | Foundry gpt-4.1-mini with no keys and no public access, proven from a VM | `make week2-test` | `week-02` |
+| 3 | [Policy as code](weeks/03-policy-as-code/README.md) | 5 AI guardrails, Audit then Deny, with negative tests | `make week3-test` | `week-03` |
+| 4 | [AI gateway](weeks/04-ai-gateway/README.md) | API Management with token limits, quotas, managed identity, token metrics | `make week4-test` | `week-04` |
+| 5 | [Private app](weeks/05-private-app/README.md) | The bank assistant on internal Container Apps, model only via the gateway | `make week5-test` | `week-05` |
+| 6 | [Detect and respond](weeks/06-security-monitoring/README.md) | Abuse and cost-attack alerts, policy-deny alerts, Defender for AI | `make week6` | `week-06` |
+| 7 | [Observability and FinOps](weeks/07-observability-finops/README.md) | Tokens and estimated cost by team, allowance alerts | `make week7` | `week-07` |
+| 8 | [CI/CD and release gate](weeks/08-cicd-release-gate/README.md) | OIDC pipeline, golden-question gate with rollback, OSFI E-23 model inventory | `make week8-gate` | `week-08` |
+
+**Quickstart:** `make local-up && make local-keys && make local-test` (free), then `az login && make week0`.
+
+**Cost:** week 0 is $0. The Azure weeks cost roughly **$25 to $40** if you do weeks 4 to 8 within two weeks and then `make destroy`. Details and the three ways to take the course: [COSTS.md](COSTS.md). Use your own subscription, never your employer's.
+
+**Want to test the AI instead of hosting it?** The companion course [ai-quality-engineer](https://github.com/vnigam1985/ai-quality-engineer) uses the same bank assistant.
 
 ---
 
@@ -379,11 +406,18 @@ A tip for a strong portfolio: pair with a QA or test engineer. They test the pla
 ```
 azure-ai-platform-architect/
 ├── README.md                     ← you are here
-├── assets/                       roadmap picture (SVG) and PDF
+├── weeks/                        the 8-week build-along course, one folder per week
+├── infra/                        the course Bicep, one folder per week (+ shared names)
+├── app/                          the bank assistant workload (same app as ai-quality-engineer)
+├── local/                        week 0 local lab: LiteLLM gateway config and tests
+├── scripts/ + evals/             release gate and model inventory checker (week 8)
+├── Makefile                      every command for the course: make help
+├── COSTS.md                      what the course costs and how to keep it low
+├── assets/                       roadmap and course pictures (SVG) and PDF
 ├── roadmap/8-month-plan.md       week-by-week schedule with exit criteria
 ├── networking/                   private DNS zones, egress rules, DNS troubleshooting
 ├── gateway/                      APIM AI gateway policies (XML) + backend pool (Bicep)
-├── governance/                   AI Guardrails initiative, residency policy, ID resolver
+├── governance/                   AI Guardrails initiative, residency policy, model inventory
 ├── iac/                          private Foundry in Bicep and Terraform + OIDC pipeline
 ├── security/                     Defender for AI, Agent 365, Entra Agent ID, threat model
 ├── finops/                       KQL cost queries, PTU vs pay-as-you-go

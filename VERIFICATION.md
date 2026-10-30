@@ -2,7 +2,7 @@
 
 Azure AI changes every month. This file records when facts and links in this repo were last checked, so readers know what to trust.
 
-**Last full check: October 29, 2026**
+**Last full check: October 30, 2026**
 
 ## How things were checked
 
@@ -12,6 +12,33 @@ Azure AI changes every month. This file records when facts and links in this rep
 - Terraform passes `terraform fmt -check` and `terraform validate` (azurerm ~> 4.0, azapi ~> 2.0)
 - JSON and XML files are parsed on every push by [validate.yml](.github/workflows/validate.yml)
 - Udemy ratings were read from the course page or a course aggregator and rounded
+
+## The 8-week course: what was tested (October 30, 2026)
+
+No Azure subscription was used to build this course, so **nothing in `infra/` has been deployed end to end yet**. Here is exactly what was and wasn't checked.
+
+| Check | Result |
+| --- | --- |
+| Every file in `infra/` | `bicep build` and `bicep lint` pass with no warnings (Bicep CLI 0.48.1) |
+| Week 3 policy JSON | Compiled template escapes `[parameters(...)]` correctly inside the policy rule |
+| Built-in policy IDs and names | Checked on azadvertizer.net, October 29, 2026 |
+| Role IDs (Cognitive Services OpenAI User, AcrPull) | Checked October 2026 |
+| Region and model | gpt-4.1-mini 2025-04-14 Standard in Canada East; not in Canada Central (Learn availability table, October 2026) |
+| APIM VNet NSG rules, subnet rules, Developer price | Microsoft Learn, October 2026 |
+| Week 0 local lab | **Run end to end**: LiteLLM 1.106.6 + Postgres, 6/6 smoke checks (401, 401, 200, 403, 429, app through gateway), fallback to the mock model |
+| Bank app with `APIM_SUBSCRIPTION_KEY` | Sends the `api-key` header (unit-checked) |
+| Release gate and model inventory scripts | Run locally; inventory catches a "shadow" deployment |
+| `remote-eval.sh` script packaging | Generated script runs locally (dry run) |
+| Week 6 prompt-attack `run-command` quoting | Run locally against the app |
+
+### Not verified yet (please report what you see)
+
+- Deploying weeks 1 to 7 into a real subscription
+- `llm-token-limit` and `llm-emit-token-metric` on an API defined by hand in Bicep. Microsoft documents importing the Foundry API with the "Azure OpenAI v1" option; the hand-made API has the same shape, but this exact setup hasn't been run
+- Whether the approved-models built-in (data-plane mode) shows up in `az deployment group validate`, and how an empty `allowedPublishers` list behaves
+- The Defender plan name `AI` in `Microsoft.Security/pricings` (inferred, not listed in the reference)
+- The custom metric names `Prompt Tokens`, `Completion Tokens`, `Total Tokens` (the workbook includes a query to check)
+- The GitHub Actions `course-release` workflow against a live subscription
 
 ## Known moving parts (re-check first)
 

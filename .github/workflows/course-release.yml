@@ -1,0 +1,99 @@
+# Week 8: release pipeline for the bank assistant on your AI platform.
+#
+#   1. inventory  : every deployed model must be in the model inventory (OSFI E-23 style)
+#   2. ship       : build a new image in ACR, roll it out to Container Apps
+#   3. gate       : run the golden questions against the live app from inside the VNet.
+#                   If the gate fails, roll back to the previous image.
+#
+# Manual trigger only (it changes Azure resources and costs a little money).
+# One-time setup (weeks/08-cicd-release-gate/README.md walks through it):
+#   - Entra app registration with a federated credential for this repo (environment: lab)
+#   - Role: Contributor on the lab resource group
+#   - Repo variables: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, RG_NAME
+#   - A GitHub environment named "lab" (add yourself as a required reviewer)
+name: course-release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency: course-release
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    environment: lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Compare deployed models with the inventory
+        run: |
+          pip install pyyaml
+          FOUNDRY=$(az cognitiveservices account list -g "${{ vars.RG_NAME }}" --query "[0].name" -o tsv)
+          az cognitiveservices account deployment list -g "${{ vars.RG_NAME }}" -n "$FOUNDRY" -o json > deployments.json
+          python3 scripts/check_model_inventory.py --deployed deployments.json | tee -a "$GITHUB_STEP_SUMMARY"
+
+  ship:
+    needs: inventory
+    runs-on: ubuntu-latest
+    environment: lab
+    outputs:
+      previous_image: ${{ steps.prev.outputs.image }}
+      app_fqdn: ${{ steps.deploy.outputs.fqdn }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - id: prev
+        name: Remember the current image (for rollback)
+        run: |
+          IMG=$(az containerapp show -g "${{ vars.RG_NAME }}" -n ca-bank-assistant --query "properties.template.containers[0].image" -o tsv)
+          echo "image=$IMG" >> "$GITHUB_OUTPUT"
+      - id: deploy
+        name: Build in ACR and roll out
+        run: |
+          ACR=$(az acr list -g "${{ vars.RG_NAME }}" --query "[0].name" -o tsv)
+          TAG="${GITHUB_SHA::7}"
+          az acr build -r "$ACR" -t "maple-bank-assistant:$TAG" -f app/Dockerfile . --no-logs
+          az containerapp update -g "${{ vars.RG_NAME }}" -n ca-bank-assistant --image "$ACR.azurecr.io/maple-bank-assistant:$TAG" -o none
+          FQDN=$(az containerapp show -g "${{ vars.RG_NAME }}" -n ca-bank-assistant --query "properties.configuration.ingress.fqdn" -o tsv)
+          echo "fqdn=$FQDN" >> "$GITHUB_OUTPUT"
+          echo "Rolled out maple-bank-assistant:$TAG" >> "$GITHUB_STEP_SUMMARY"
+
+  gate:
+    needs: ship
+    runs-on: ubuntu-latest
+    environment: lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Start the test VM (the app is only reachable inside the VNet)
+        run: az vm start -g "${{ vars.RG_NAME }}" -n vm-aiplat-jump
+      - id: gate
+        name: Release gate
+        run: |
+          RG="${{ vars.RG_NAME }}" VM=vm-aiplat-jump APP_FQDN="${{ needs.ship.outputs.app_fqdn }}" \
+            scripts/remote-eval.sh | tee gate.txt
+          { echo '```'; cat gate.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Roll back on a failed gate
+        if: failure() && steps.gate.conclusion == 'failure'
+        run: |
+          az containerapp update -g "${{ vars.RG_NAME }}" -n ca-bank-assistant --image "${{ needs.ship.outputs.previous_image }}" -o none
+          echo "Gate failed. Rolled back to ${{ needs.ship.outputs.previous_image }}" >> "$GITHUB_STEP_SUMMARY"
+      - name: Stop the test VM (cost)
+        if: always()
+        run: az vm deallocate -g "${{ vars.RG_NAME }}" -n vm-aiplat-jump --no-wait

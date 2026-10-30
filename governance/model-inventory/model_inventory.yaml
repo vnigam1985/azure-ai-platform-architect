@@ -1,0 +1,51 @@
+# Model inventory for the AI platform lab.
+#
+# OSFI Guideline E-23 (Model Risk Management, in force May 1, 2027) expects
+# federally regulated financial institutions to keep an inventory of their models,
+# including AI and machine learning models, with ownership, purpose, risk rating
+# and validation status. This file is a simple, version-controlled version of that.
+# scripts/check_model_inventory.py validates it, and in week 8 the pipeline
+# compares it with what is actually deployed. A model that is deployed but not in
+# this file fails the release.
+#
+# This is a learning template, not legal or compliance advice. Real inventories
+# follow your institution's model risk policy.
+
+schema_version: 1
+models:
+  - id: bank-assistant-llm
+    name: Maple Leaf Bank assistant (RAG + agent)
+    deployment_name: gpt-4.1-mini          # must match the Foundry deployment name
+    provider_model: gpt-4.1-mini
+    provider_model_version: "2025-04-14"
+    vendor: OpenAI via Microsoft Foundry
+    deployment_type: Standard               # regional processing (data residency)
+    region: canadaeast
+    business_owner: Retail Banking Digital  # a person or team accountable for use
+    technical_owner: AI Platform Team
+    purpose: Answer customer questions from published bank policies; check balances, lock cards, and start transfers with customer confirmation
+    out_of_scope_uses:
+      - Financial, investment or credit advice
+      - Decisions about credit, fraud or account closure
+    risk_rating: High                       # customer-facing, can move money
+    materiality_rationale: Customer-facing; agent can initiate transfers up to $1,000 with confirmation
+    data_classification: Confidential
+    personal_information: true
+    human_oversight: Transfers require explicit customer confirmation; platform enforces a $1,000 limit in code
+    controls:
+      - Private endpoint only, no public network access
+      - Entra ID only, API keys disabled
+      - AI gateway token limits and monthly quota per consuming app
+      - Approved-model and data-residency Azure Policy
+      - Release gate on golden questions (evals/release-gate.json)
+    validation:
+      last_validated: "2026-10-30"
+      validated_by: AI Quality Engineering (independent of the build team)
+      method: Golden dataset, red teaming against OWASP LLM Top 10 2026, judge calibration
+      evidence: https://github.com/vnigam1985/ai-quality-engineer
+    monitoring:
+      - Gateway 401/403 and 429 alerts (week 6)
+      - Daily token allowance per team (week 7)
+      - App error alert (week 7)
+    next_review: "2027-04-30"
+    status: approved-for-lab

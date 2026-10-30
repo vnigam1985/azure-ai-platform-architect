@@ -49,3 +49,25 @@ jobs:
           find . -name '*.json' -not -path './.git/*' -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
           find . -name '*.xml' -not -path './.git/*' -print0 | xargs -0 -n1 python3 -c "import sys, xml.dom.minidom; xml.dom.minidom.parse(sys.argv[1])"
           echo "All JSON and XML files parse."
+
+  course-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Model inventory is valid
+        run: |
+          pip install pyyaml
+          python3 scripts/check_model_inventory.py
+      - name: Bank app starts (offline mode) and the release gate script runs
+        run: |
+          pip install -r app/requirements.txt
+          nohup uvicorn app.app:app --port 8000 > app.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS localhost:8000/health && break; sleep 1; done
+          # Offline mode copies policy text, so the out-of-scope case is expected to fail here.
+          # This step only proves the script works; the real gate runs against the LLM in week 8.
+          python3 scripts/eval_gate.py --url http://localhost:8000 --cases evals/release-gate.json || true
+      - name: Shell scripts parse
+        run: for f in $(git ls-files '*.sh'); do bash -n "$f"; done
