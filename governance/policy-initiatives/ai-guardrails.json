@@ -1,0 +1,124 @@
+{
+  "name": "ai-guardrails",
+  "properties": {
+    "displayName": "AI Guardrails for Microsoft Foundry and Azure AI services",
+    "description": "Baseline guardrails for AI workloads in an Azure landing zone: no keys, no public endpoints, approved models only, and data residency. Replace every <resolve-...> value by running ../scripts/resolve-builtin-ids.sh, then assign at management group scope with Audit first.",
+    "policyType": "Custom",
+    "metadata": {
+      "category": "AI Platform",
+      "version": "1.0.0",
+      "source": "https://github.com/vnigam1985/azure-ai-platform-architect"
+    },
+    "parameters": {
+      "auditOrDeny": {
+        "type": "String",
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "allowedPublishers": {
+        "type": "Array",
+        "defaultValue": [
+          "OpenAI"
+        ]
+      },
+      "allowedAssetIds": {
+        "type": "Array",
+        "defaultValue": []
+      },
+      "allowedDeploymentTypes": {
+        "type": "Array",
+        "defaultValue": [
+          "Standard",
+          "DataZoneStandard",
+          "ProvisionedManaged",
+          "DataZoneProvisionedManaged"
+        ]
+      }
+    },
+    "policyDefinitions": [
+      {
+        "policyDefinitionReferenceId": "aiServicesKeyAccessDisabled",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/71ef260a-8f18-47b7-abcb-62d0673d94dc",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "aiServicesRestrictNetworkAccess",
+        "policyDefinitionId": "<resolve: 'Azure AI Services resources should restrict network access'>",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "aiServicesUsePrivateLink",
+        "policyDefinitionId": "<resolve: 'Azure AI Services resources should use Azure Private Link'>"
+      },
+      {
+        "policyDefinitionReferenceId": "foundryApprovedModelsOnly",
+        "policyDefinitionId": "<resolve: 'Foundry model deployments should only use approved models'>",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          },
+          "allowedPublishers": {
+            "value": "[parameters('allowedPublishers')]"
+          },
+          "allowedAssetIds": {
+            "value": "[parameters('allowedAssetIds')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "foundryModelEligibility",
+        "policyDefinitionId": "<resolve: 'Foundry model deployments should meet eligibility requirements'>",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          },
+          "denyPreviewModels": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "aiDataResidency",
+        "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/<your-mg>/providers/Microsoft.Authorization/policyDefinitions/deny-ai-global-deployment-types",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          },
+          "allowedDeploymentTypes": {
+            "value": "[parameters('allowedDeploymentTypes')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "aiSearchDisablePublicAccess",
+        "policyDefinitionId": "<resolve: 'Azure AI Search services should disable public network access'>",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "aiSearchDisableLocalAuth",
+        "policyDefinitionId": "<resolve: 'Azure AI Search services should have local authentication methods disabled'>",
+        "parameters": {
+          "effect": {
+            "value": "[parameters('auditOrDeny')]"
+          }
+        }
+      }
+    ]
+  }
+}

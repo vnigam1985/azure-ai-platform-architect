@@ -1,0 +1,39 @@
+<!--
+  Content safety at the gateway: block harmful prompts and prompt-injection
+  attempts before they reach the model.
+
+  Syntax checked against Microsoft Learn (Oct 2026):
+    https://learn.microsoft.com/en-us/azure/api-management/llm-content-safety-policy
+
+  Prereqs:
+    - An Azure AI Content Safety resource
+    - An APIM backend named "content-safety-backend" pointing at it,
+      authenticated with APIM's managed identity
+  Behaviour:
+    - Blocked requests return 403
+    - Thresholds: 0 = most restrictive, 7 = least restrictive (EightSeverityLevels)
+-->
+<policies>
+    <inbound>
+        <base />
+        <llm-content-safety backend-id="content-safety-backend" shield-prompt="true">
+            <categories output-type="EightSeverityLevels">
+                <category name="Hate" threshold="4" />
+                <category name="SelfHarm" threshold="4" />
+                <category name="Sexual" threshold="4" />
+                <category name="Violence" threshold="4" />
+            </categories>
+        </llm-content-safety>
+        <set-backend-service backend-id="foundry-backend" />
+        <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

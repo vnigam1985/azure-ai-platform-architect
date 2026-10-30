@@ -1,0 +1,58 @@
+{
+  "name": "deny-ai-global-deployment-types",
+  "properties": {
+    "displayName": "AI: deny model deployment types that can process data outside the allowed geography",
+    "description": "Data-residency guardrail. Blocks Foundry / Azure OpenAI model deployments whose deployment type (SKU) is not on the allowed list. Example use: a Canadian bank that only allows Standard (regional) or DataZone deployments. VERIFY the alias before use: run `az provider show --namespace Microsoft.CognitiveServices --expand \"resourceTypes/aliases\" --query \"resourceTypes[?resourceType=='accounts/deployments'].aliases[].name\"` and confirm 'Microsoft.CognitiveServices/accounts/deployments/sku.name' is listed.",
+    "mode": "All",
+    "metadata": {
+      "category": "Cognitive Services",
+      "version": "1.0.0",
+      "source": "https://github.com/vnigam1985/azure-ai-platform-architect"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Start with Audit. Move to Deny once teams have migrated."
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "allowedDeploymentTypes": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Allowed deployment types",
+          "description": "Deployment SKU names that are allowed, for example Standard, DataZoneStandard, ProvisionedManaged, DataZoneProvisionedManaged."
+        },
+        "defaultValue": [
+          "Standard",
+          "DataZoneStandard",
+          "ProvisionedManaged",
+          "DataZoneProvisionedManaged"
+        ]
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.CognitiveServices/accounts/deployments"
+          },
+          {
+            "field": "Microsoft.CognitiveServices/accounts/deployments/sku.name",
+            "notIn": "[parameters('allowedDeploymentTypes')]"
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}

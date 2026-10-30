@@ -1,0 +1,42 @@
+<!--
+  Semantic cache: return a cached answer when a new prompt is close enough to
+  an earlier one. Saves tokens on repeated questions (FAQs, help desks).
+
+  Syntax checked against Microsoft Learn (Oct 2026):
+    https://learn.microsoft.com/en-us/azure/api-management/llm-semantic-cache-lookup-policy
+
+  Prereqs:
+    - An external cache that supports vector search (Azure Managed Redis with
+      RediSearch) configured on APIM
+    - An embeddings model deployment, exposed as APIM backend "embeddings-backend"
+  Warnings:
+    - Start with a low score-threshold (0.05). Above 0.2 you'll get wrong hits.
+    - Cached answers can be stale or wrong for the new question. Don't cache
+      personalized or regulated answers. Partition with vary-by.
+-->
+<policies>
+    <inbound>
+        <base />
+        <llm-semantic-cache-lookup
+            score-threshold="0.05"
+            embeddings-backend-id="embeddings-backend"
+            embeddings-backend-auth="system-assigned"
+            ignore-system-messages="true"
+            max-message-count="10">
+            <vary-by>@(context.Subscription.Id)</vary-by>
+        </llm-semantic-cache-lookup>
+        <set-backend-service backend-id="foundry-backend" />
+        <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <!-- Cache successful answers for 1 hour -->
+        <llm-semantic-cache-store duration="3600" />
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

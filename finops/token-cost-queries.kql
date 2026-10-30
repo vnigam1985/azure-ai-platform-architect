@@ -1,0 +1,61 @@
+// =============================================================================
+// AI FinOps: token usage and cost per consumer from APIM token metrics
+// -----------------------------------------------------------------------------
+// Source: llm-emit-token-metric (see ../gateway/apim-policies/01-*.xml)
+// sends custom metrics to Application Insights (customMetrics table).
+//
+// IMPORTANT: Microsoft doesn't publish fixed metric names on the policy page.
+// Run Query 0 first and replace the names below with what your instance emits.
+// Prices change. Take per-1M-token prices from the Azure pricing page for your
+// model, region and deployment type, and update the let statements.
+// =============================================================================
+
+
+// ---- Query 0: what token metrics does my gateway emit? ----------------------
+customMetrics
+| where timestamp > ago(1d)
+| summarize samples = count() by name, tostring(customDimensions)
+| order by samples desc
+| take 50;
+
+
+// ---- Query 1: tokens per subscription (consumer), last 30 days --------------
+customMetrics
+| where timestamp > ago(30d)
+| where name in ("Prompt Tokens", "Completion Tokens", "Total Tokens")   // adjust after Query 0
+| extend consumer = tostring(customDimensions["Subscription ID"])
+| summarize tokens = sum(valueSum) by consumer, name
+| evaluate pivot(name, sum(tokens))
+| order by ['Total Tokens'] desc;
+
+
+// ---- Query 2: estimated cost per consumer -----------------------------------
+let promptPricePer1M = 2.00;       // <- replace with your model's input price (USD per 1M tokens)
+let completionPricePer1M = 8.00;   // <- replace with your model's output price
+customMetrics
+| where timestamp > ago(30d)
+| where name in ("Prompt Tokens", "Completion Tokens")
+| extend consumer = tostring(customDimensions["Subscription ID"])
+| summarize promptTokens = sumif(valueSum, name == "Prompt Tokens"),
+            completionTokens = sumif(valueSum, name == "Completion Tokens")
+            by consumer
+| extend estCostUSD = round(promptTokens / 1e6 * promptPricePer1M + completionTokens / 1e6 * completionPricePer1M, 2)
+| order by estCostUSD desc;
+
+
+// ---- Query 3: hourly token burn (spot spikes and runaway agents) ------------
+customMetrics
+| where timestamp > ago(7d)
+| where name == "Total Tokens"
+| summarize tokens = sum(valueSum) by bin(timestamp, 1h), backend = tostring(customDimensions["Backend ID"])
+| render timechart;
+
+
+// ---- Query 4: who is getting throttled? (APIM gateway logs) -----------------
+// Needs APIM diagnostic settings sending GatewayLogs to Log Analytics
+// (resource-specific table ApiManagementGatewayLogs).
+ApiManagementGatewayLogs
+| where TimeGenerated > ago(7d)
+| where ResponseCode in (429, 403)
+| summarize throttled = count() by ApimSubscriptionId, ResponseCode, bin(TimeGenerated, 1h)
+| order by throttled desc;

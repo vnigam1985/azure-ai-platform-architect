@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1560" width="1200" height="1560" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/>
+    </marker>
+    <style>
+      .title { font-size: 40px; font-weight: 800; fill: #0b1f3a; }
+      .sub { font-size: 18px; fill: #4a5568; }
+      .num { font-size: 22px; font-weight: 800; fill: #ffffff; }
+      .h { font-size: 21px; font-weight: 700; fill: #0b1f3a; }
+      .t { font-size: 14.5px; fill: #2d3748; }
+      .legend { font-size: 14px; fill: #2d3748; }
+      .pill { font-size: 13px; font-weight: 600; fill: #0b1f3a; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="1560" fill="#ffffff"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#0078d4"/>
+
+  <text x="600" y="72" text-anchor="middle" class="title">Azure AI Platform Architect Roadmap 2026</text>
+  <text x="600" y="106" text-anchor="middle" class="sub">From cloud, network and platform engineer to the architect who runs AI safely at enterprise scale</text>
+
+  <!-- legend -->
+  <g transform="translate(205,132)">
+    <rect x="0" y="0" width="16" height="16" rx="3" fill="#0078d4"/><text x="24" y="13" class="legend">Foundations</text>
+    <rect x="140" y="0" width="16" height="16" rx="3" fill="#00a37a"/><text x="164" y="13" class="legend">Network plane</text>
+    <rect x="300" y="0" width="16" height="16" rx="3" fill="#8661c5"/><text x="324" y="13" class="legend">Governance and security</text>
+    <rect x="510" y="0" width="16" height="16" rx="3" fill="#e8730c"/><text x="534" y="13" class="legend">AI and app plane</text>
+    <rect x="680" y="0" width="16" height="16" rx="3" fill="#c13584"/><text x="704" y="13" class="legend">Operate and lead</text>
+  </g>
+
+  <!-- spine -->
+  <line x1="600" y1="175" x2="600" y2="1440" stroke="#cbd5e0" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Step template: card 500x92, number circle on spine -->
+
+  <!-- 1 left -->
+  <g>
+    <line x1="560" y1="231" x2="584" y2="231" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="185" width="500" height="92" rx="12" fill="#eaf4fd" stroke="#0078d4" stroke-width="2"/>
+    <text x="84" y="220" class="h">GenAI fundamentals</text>
+    <text x="84" y="246" class="t">Tokens, TPM, embeddings, RAG, agents, tool calls, MCP</text>
+    <text x="84" y="266" class="t">AI-901 (optional)</text>
+    <circle cx="600" cy="231" r="20" fill="#0078d4"/><text x="600" y="239" text-anchor="middle" class="num">1</text>
+  </g>
+
+  <!-- 2 right -->
+  <g>
+    <line x1="616" y1="335" x2="640" y2="335" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="289" width="500" height="92" rx="12" fill="#fff3e8" stroke="#e8730c" stroke-width="2"/>
+    <text x="664" y="324" class="h">Microsoft Foundry</text>
+    <text x="664" y="350" class="t">Resource vs project, deployment types, PTU, keyless auth</text>
+    <text x="664" y="370" class="t">Agent Service standard setup</text>
+    <circle cx="600" cy="335" r="20" fill="#e8730c"/><text x="600" y="343" text-anchor="middle" class="num">2</text>
+  </g>
+
+  <!-- 3 left -->
+  <g>
+    <line x1="560" y1="439" x2="584" y2="439" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="393" width="500" height="92" rx="12" fill="#fff3e8" stroke="#e8730c" stroke-width="2"/>
+    <text x="84" y="428" class="h">The app plane</text>
+    <text x="84" y="454" class="t">App Service, Functions, Container Apps</text>
+    <text x="84" y="474" class="t">App Gateway WAF ingress, VNet integration egress</text>
+    <circle cx="600" cy="439" r="20" fill="#e8730c"/><text x="600" y="447" text-anchor="middle" class="num">3</text>
+  </g>
+
+  <!-- 4 right -->
+  <g>
+    <line x1="616" y1="543" x2="640" y2="543" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="497" width="500" height="92" rx="12" fill="#e6f7f1" stroke="#00a37a" stroke-width="2"/>
+    <text x="664" y="532" class="h">Private networking for AI</text>
+    <text x="664" y="558" class="t">Private endpoints + DNS zones, DNS Private Resolver</text>
+    <text x="664" y="578" class="t">Firewall egress, hub-spoke and vWAN, managed VNet</text>
+    <circle cx="600" cy="543" r="20" fill="#00a37a"/><text x="600" y="551" text-anchor="middle" class="num">4</text>
+  </g>
+
+  <!-- 5 left -->
+  <g>
+    <line x1="560" y1="647" x2="584" y2="647" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="601" width="500" height="92" rx="12" fill="#e6f7f1" stroke="#00a37a" stroke-width="2"/>
+    <text x="84" y="636" class="h">AI gateway (API Management)</text>
+    <text x="84" y="662" class="t">Token limits, chargeback metrics, semantic cache</text>
+    <text x="84" y="682" class="t">Content safety, backend pools, MCP gateway</text>
+    <circle cx="600" cy="647" r="20" fill="#00a37a"/><text x="600" y="655" text-anchor="middle" class="num">5</text>
+  </g>
+
+  <!-- 6 right -->
+  <g>
+    <line x1="616" y1="751" x2="640" y2="751" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="705" width="500" height="92" rx="12" fill="#f2eefb" stroke="#8661c5" stroke-width="2"/>
+    <text x="664" y="740" class="h">Governance and Azure Policy</text>
+    <text x="664" y="766" class="t">Approved models, no keys, no public access, residency</text>
+    <text x="664" y="786" class="t">EPAC policy as code: audit, then deny</text>
+    <circle cx="600" cy="751" r="20" fill="#8661c5"/><text x="600" y="759" text-anchor="middle" class="num">6</text>
+  </g>
+
+  <!-- 7 left -->
+  <g>
+    <line x1="560" y1="855" x2="584" y2="855" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="809" width="500" height="92" rx="12" fill="#f2eefb" stroke="#8661c5" stroke-width="2"/>
+    <text x="84" y="844" class="h">Security for AI and agents</text>
+    <text x="84" y="870" class="t">Defender for AI, Agent 365, Entra Agent ID</text>
+    <text x="84" y="890" class="t">Prompt Shields, Purview, OWASP LLM and Agentic Top 10</text>
+    <circle cx="600" cy="855" r="20" fill="#8661c5"/><text x="600" y="863" text-anchor="middle" class="num">7</text>
+  </g>
+
+  <!-- 8 right -->
+  <g>
+    <line x1="616" y1="959" x2="640" y2="959" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="913" width="500" height="92" rx="12" fill="#fff3e8" stroke="#e8730c" stroke-width="2"/>
+    <text x="664" y="948" class="h">RAG and agent building blocks</text>
+    <text x="664" y="974" class="t">AI Search, Agent Service, Agent Framework 1.0</text>
+    <text x="664" y="994" class="t">MCP on Azure, AKS / Container Apps hosting</text>
+    <circle cx="600" cy="959" r="20" fill="#e8730c"/><text x="600" y="967" text-anchor="middle" class="num">8</text>
+  </g>
+
+  <!-- 9 left -->
+  <g>
+    <line x1="560" y1="1063" x2="584" y2="1063" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="1017" width="500" height="92" rx="12" fill="#eaf4fd" stroke="#0078d4" stroke-width="2"/>
+    <text x="84" y="1052" class="h">IaC and landing zones</text>
+    <text x="84" y="1078" class="t">AI Landing Zones, ALZ accelerator, AVM</text>
+    <text x="84" y="1098" class="t">Bicep, Terraform + AzAPI, GitHub Actions OIDC</text>
+    <circle cx="600" cy="1063" r="20" fill="#0078d4"/><text x="600" y="1071" text-anchor="middle" class="num">9</text>
+  </g>
+
+  <!-- 10 right -->
+  <g>
+    <line x1="616" y1="1167" x2="640" y2="1167" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="1121" width="500" height="92" rx="12" fill="#fbe9f3" stroke="#c13584" stroke-width="2"/>
+    <text x="664" y="1156" class="h">Observability and FinOps</text>
+    <text x="664" y="1182" class="t">Tracing, token metrics, cost per team</text>
+    <text x="664" y="1202" class="t">PTU vs pay-as-you-go, spillover pattern</text>
+    <circle cx="600" cy="1167" r="20" fill="#c13584"/><text x="600" y="1175" text-anchor="middle" class="num">10</text>
+  </g>
+
+  <!-- 11 left -->
+  <g>
+    <line x1="560" y1="1271" x2="584" y2="1271" stroke="#4a5568" stroke-width="2"/>
+    <rect x="60" y="1225" width="500" height="92" rx="12" fill="#fbe9f3" stroke="#c13584" stroke-width="2"/>
+    <text x="84" y="1260" class="h">Regulated industries</text>
+    <text x="84" y="1286" class="t">OSFI E-23 model risk (May 2027), OSFI B-13</text>
+    <text x="84" y="1306" class="t">Model inventory, evidence, IAPP AIGP</text>
+    <circle cx="600" cy="1271" r="20" fill="#c13584"/><text x="600" y="1279" text-anchor="middle" class="num">11</text>
+  </g>
+
+  <!-- 12 right -->
+  <g>
+    <line x1="616" y1="1375" x2="640" y2="1375" stroke="#4a5568" stroke-width="2"/>
+    <rect x="640" y="1329" width="500" height="92" rx="12" fill="#fbe9f3" stroke="#c13584" stroke-width="2"/>
+    <text x="664" y="1364" class="h">AI-assisted platform engineering</text>
+    <text x="664" y="1390" class="t">Copilot / Claude Code for IaC and policy</text>
+    <text x="664" y="1410" class="t">Azure MCP Server, you stay the reviewer</text>
+    <circle cx="600" cy="1375" r="20" fill="#c13584"/><text x="600" y="1383" text-anchor="middle" class="num">12</text>
+  </g>
+
+  <!-- certification strip -->
+  <rect x="60" y="1458" width="1080" height="70" rx="12" fill="#0b1f3a"/>
+  <text x="84" y="1490" font-size="17" font-weight="700" fill="#ffffff">Certification spine</text>
+  <text x="84" y="1515" font-size="15" fill="#cbd5e0">AI-901 (optional)  →  AI-103  →  SC-500  →  AZ-305  →  AZ-700 / SC-100 / IAPP AIGP</text>
+  <text x="1116" y="1515" text-anchor="end" font-size="13" fill="#90cdf4">github.com/vnigam1985/azure-ai-platform-architect</text>
+</svg>

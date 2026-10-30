@@ -1,0 +1,55 @@
+<!--
+  AI gateway baseline: Entra ID to the backend, per-subscription token limits,
+  monthly quota, and token metrics for chargeback.
+
+  Syntax checked against Microsoft Learn (Oct 2026):
+    https://learn.microsoft.com/en-us/azure/api-management/llm-token-limit-policy
+    https://learn.microsoft.com/en-us/azure/api-management/llm-emit-token-metric-policy
+
+  Prereqs:
+    - APIM managed identity has a data-plane role on the Foundry resource
+    - Application Insights logger connected to APIM, with custom metrics enabled
+    - Backend "foundry-backend" (or a pool, see ../bicep/backend-pool.bicep)
+-->
+<policies>
+    <inbound>
+        <base />
+        <!-- Route to the Foundry backend (single backend or a load-balanced pool) -->
+        <set-backend-service backend-id="foundry-backend" />
+
+        <!-- Call Foundry with APIM's managed identity. Consumers never see a key. -->
+        <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+
+        <!-- 1. Per-consumer rate limit and monthly quota.
+             429 when tokens-per-minute is exceeded, 403 when the quota is used up. -->
+        <llm-token-limit
+            counter-key="@(context.Subscription.Id)"
+            tokens-per-minute="20000"
+            token-quota="5000000"
+            token-quota-period="Monthly"
+            estimate-prompt-tokens="false"
+            remaining-tokens-header-name="x-remaining-tokens"
+            tokens-consumed-header-name="x-tokens-consumed" />
+
+        <!-- 2. Token metrics for showback and chargeback.
+             Default dimensions need no value. Custom ones (team, app) read headers. -->
+        <llm-emit-token-metric namespace="ai-gateway">
+            <dimension name="Subscription ID" />
+            <dimension name="API ID" />
+            <dimension name="Backend ID" />
+            <dimension name="Team" value="@(context.Request.Headers.GetValueOrDefault(&quot;x-team&quot;, &quot;unknown&quot;))" />
+        </llm-emit-token-metric>
+    </inbound>
+    <backend>
+        <!-- Retry on 429/5xx so a pool can fail over to the next backend -->
+        <retry condition="@(context.Response.StatusCode == 429 || context.Response.StatusCode >= 500)" count="2" interval="1" first-fast-retry="true">
+            <forward-request buffer-request-body="true" />
+        </retry>
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
